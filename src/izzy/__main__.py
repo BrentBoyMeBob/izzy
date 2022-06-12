@@ -1,6 +1,6 @@
 # Izzy: A lightweight, experimental assistant.
 
-# Import core libraries.
+# Import core functions.
 import importlib
 import os
 import sys
@@ -55,23 +55,23 @@ def izzyHelp():
     print("Izzy: A lightweight, experimental assistant.")
     print("-i, --interpret: Ask a question using a string.")
     print("-h, --help: Shows instructions for the program.")
-#if len(sys.argv) == 1:
-#    izzyHelp()
-#    exit()
+if len(sys.argv) == 1:
+    izzyHelp()
+    exit()
 
 # Define a variable for when a parameter needs to be passed
 izzyParam = False
 
 # Start interpreting arguments if a parameter is appended or a function.
-for i in range(1, len(sys.argv)):
-    if izzyParam:
-        izzyParam = False
-        continue
-    if str(sys.argv[i])[0] == "-":
-        # Once that is resolved, match the function.
-        if sys.argv[i] == "-i" or sys.argv[i] == "--interpret":
-            print(interpret(sys.argv[i+1]))
-            izzyParam = True
-        #elif sys.argv[i] == "-h" or sys.argv[i] == "--help":
-            #izzyHelp()
-            
+if __name__ == "__main__":
+    for i in range(1, len(sys.argv)):
+        if izzyParam:
+            izzyParam = False
+            continue
+        if str(sys.argv[i])[0] == "-":
+            # Once that is resolved, match the function.
+            if sys.argv[i] == "-i" or sys.argv[i] == "--interpret":
+                print(interpret(sys.argv[i+1]))
+                izzyParam = True
+            elif sys.argv[i] == "-h" or sys.argv[i] == "--help":
+                izzyHelp()

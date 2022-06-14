@@ -30,15 +30,31 @@ izzySynonyms = [
 #        importlib.import_module(i)
 #    import bender
 
-# Index the synonyms through the existing statements.
-for izzyCheck in izzyInputs:
-    izzyCheck[0] = izzyCheck[0].casefold()
-    if izzyCheck[3]:
-        for i in izzySynonyms:
-            for j in i:
-                if j.casefold() in izzyCheck[0]:
-                    for k in i:
-                        izzyInputs.append([ izzyCheck[0].replace(j.casefold(), k.casefold()), izzyCheck[1], izzyCheck[2], False ])
+# Index the synonyms through the existing statements. Create a function for external use.
+def indexPossibilities():
+    izzyForDeletion = []
+    for izzyCheckGarbage in range(len(izzyInputs)):
+        izzyCheckGarbageParam = izzyInputs[izzyCheckGarbage]
+        if izzyCheckGarbageParam[3] is False:
+            izzyForDeletion.append(izzyCheckGarbage)
+    for izzyDeleteProcess in reversed(izzyForDeletion):
+        izzyInputs.pop(izzyDeleteProcess)
+    for izzyCheck in izzyInputs:
+        izzyCheck[0] = izzyCheck[0].casefold()
+        if izzyCheck[3]:
+            for i in izzySynonyms:
+                for j in i:
+                    if j.casefold() in izzyCheck[0]:
+                        for k in i:
+                            izzyInputs.append([ izzyCheck[0].replace(j.casefold(), k.casefold()), izzyCheck[1], izzyCheck[2], False ])
+indexPossibilities()
+
+# Create a function to add Python modules for Izzy to reference and index.
+def addModules(izzyModules):
+    izzyModuleList = izzyModules.split(" ")
+    for izzyModuleToImport in izzyModuleList:
+        importlib.import_module(izzyModuleToImport)
+    indexPossibilities()
 
 # Define the function for interpreting.
 def interpret(izzyUserInput):

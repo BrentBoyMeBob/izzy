@@ -9,26 +9,15 @@ def proceed():
 
 # Add an array of possible statements.
 izzyInputs = [ 
-    # User Input          Izzy Output                                   Function     To Fix (true)
-    [ "Hello",            "Hello there! Feel free to ask me anything.", "proceed()", True ], 
-    [ "How are you",      "Doing pretty well myself.",                  "proceed()", True ]
+    # User Input            Izzy Output         Function    To Fix (true)
+    [ "hello",              "Hey there!",       proceed,    True ],
+    [ "how are you doing",  "I'm doing well.",  proceed,    True ]
 ]
 
 # Add synonyms for certain words.
 izzySynonyms = [
     [ "hello", "hi", "hey" ]
 ]
-
-# Load all of the other scripts.
-#if os.path.isdir('/usr/share/izzy/modules'):
-#    sys.path.insert(0, '/usr/share/izzy/modules')
-#    for i in os.listdir('/usr/share/izzy/modules/'):
-#        importlib.import_module(i)
-#if os.path.isdir('/home/brent/.config/izzy/modules'):
-#    sys.path.insert(0, '/home/brent/.config/izzy/modules')
-#    for i in os.listdir('/home/brent/.config/izzy/modules'):
-#        importlib.import_module(i)
-#    import bender
 
 # Index the synonyms through the existing statements. Create a function for external use.
 def indexPossibilities():
@@ -56,12 +45,69 @@ def addModules(izzyModules):
         importlib.import_module(izzyModuleToImport)
     indexPossibilities()
 
+# Create a fallback statement if there were no correct interpretations.
+def fallbackEvent():
+    return "I couldn't understand."
+fallbackCall = fallbackEvent
+
 # Define the function for interpreting.
 def interpret(izzyUserInput):
+    interpret.izzyUnformedInput = izzyUserInput
+    # Create a formed input.
+    interpret.izzyFormedInput = [ interpret.izzyUnformedInput ]
+    for i in range(len(interpret.izzyFormedInput)):
+        interpret.izzyFormedInput[i] = interpret.izzyFormedInput[i].casefold()
+        izzyForm = True
+        while(izzyForm):
+            def breakdown(toReplace):
+                interpret.izzyBackupInput = interpret.izzyFormedInput[i]
+                interpret.izzyFormedInput.pop(i)
+                interpret.izzyFormedInput += interpret.izzyBackupInput.split(toReplace)
+            if ", and " in interpret.izzyFormedInput[i]:
+                breakdown(", and ")
+            if ", " in interpret.izzyFormedInput[i]:
+                breakdown(", ")
+            if " and " in interpret.izzyFormedInput[i]:
+                breakdown(" and ")
+            if "." in interpret.izzyFormedInput[i]:
+                breakdown(".")
+            if "?" in interpret.izzyFormedInput[i]:
+                breakdown("?")
+            if "!" in interpret.izzyFormedInput[i]:
+                breakdown("!")
+            izzyForm = False
     # Start a loop for each possible input, check if it is equivalent.
-    for izzyCycle in izzyInputs:
-        if izzyCycle[0].casefold() == izzyUserInput.casefold():
-            # If it is equivalent, give the output, and break.
-            return izzyCycle[1]
-            exec(izzyCycle[2])
-            break
+    izzyResults = []
+    for i in interpret.izzyFormedInput:
+        izzyFound = False
+        for izzyCycle in izzyInputs:
+            if izzyCycle[0].casefold() == i:
+                # If it is equivalent, give the output, and break.
+                izzyFound = True
+                izzyResults.append(izzyCycle[1])
+                izzyCycle[2]()
+                break
+        # If none of them are equivalent, execute the modular Fallback Call.
+        if izzyFound is False: 
+            izzyResults.append(fallbackCall())
+    # Now, merge all of the answers into one string and return it to complete the function.
+    izzyFinalResult = ""
+    if len(izzyResults) > 1:
+        for i in range(len(izzyResults)):
+            if i != 0:
+                if izzyResults[i][0] is not "I":
+                    izzyResults[i] = izzyResults[i][0].casefold() + izzyResults[i][1:]
+            if i == len(izzyResults)-1:
+                pass
+            elif i == len(izzyResults)-2:
+                izzyResults[i] = izzyResults[i].replace(".", " and ")
+                izzyResults[i] = izzyResults[i].replace("?", " and ")
+                izzyResults[i] = izzyResults[i].replace("!", " and ")
+            else:
+                izzyResults[i] = izzyResults[i].replace(".", ", ")
+                izzyResults[i] = izzyResults[i].replace("?", ", ")
+                izzyResults[i] = izzyResults[i].replace("!", ", ")
+            izzyFinalResult += izzyResults[i]
+    else:
+        izzyFinalResult += izzyResults[0]
+    return izzyFinalResult

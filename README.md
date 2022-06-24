@@ -1,5 +1,5 @@
 # Izzy
 
-Izzy is a tiny and experimental assistant AI for Python. It is completely self contained in itself and does not need any access to any further APIs or external neural networks.
+Izzy is an ongoing, extendable, and minimal digital assistant powered completely algorithmically, without the need for any artificial intelligence. This means that it will not collect any data, period. This also means that it will not access any external APIs or connections.
 
 It should not be used in a large scale capacity yet as it is very experimental and in-development software.

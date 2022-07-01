@@ -53,34 +53,64 @@ fallbackCall = fallbackEvent
 # Define the function for interpreting.
 def interpret(izzyUserInput):
     interpret.izzyUnformedInput = izzyUserInput
-    # Create a formed input.
+    # Create and casefold a formed input.
     interpret.izzyFormedInput = [ interpret.izzyUnformedInput ]
     for i in range(len(interpret.izzyFormedInput)):
         interpret.izzyFormedInput[i] = interpret.izzyFormedInput[i].casefold()
-        izzyForm = True
-        while(izzyForm):
-            def breakdown(toReplace):
-                interpret.izzyBackupInput = interpret.izzyFormedInput[i]
-                interpret.izzyFormedInput.pop(i)
-                interpret.izzyFormedInput += interpret.izzyBackupInput.split(toReplace)
+    # Split up the formed input.
+    izzySplitToBeDone = True
+    while(izzySplitToBeDone):
+        def breakdown(toReplace, whereReplace):
+            interpret.izzyBackupInput = interpret.izzyFormedInput[whereReplace]
+            interpret.izzyFormedInput.pop(whereReplace)
+            interpret.izzyFormedInput += interpret.izzyBackupInput.split(toReplace)
+        izzySplitToBeDone = False
+        for i in range(len(interpret.izzyFormedInput)):
             if ", and " in interpret.izzyFormedInput[i]:
-                breakdown(", and ")
-            if ", " in interpret.izzyFormedInput[i]:
-                breakdown(", ")
-            if " and " in interpret.izzyFormedInput[i]:
-                breakdown(" and ")
-            if "." in interpret.izzyFormedInput[i]:
-                breakdown(".")
-            if "?" in interpret.izzyFormedInput[i]:
-                breakdown("?")
-            if "!" in interpret.izzyFormedInput[i]:
-                breakdown("!")
-            izzyForm = False
+                breakdown(", and ", i)
+                izzySplitToBeDone = True
+            elif ", " in interpret.izzyFormedInput[i]:
+                breakdown(", ", i)
+                izzySplitToBeDone = True
+            elif " and " in interpret.izzyFormedInput[i]:
+                breakdown(" and ", i)
+                izzySplitToBeDone = True
+            elif "." in interpret.izzyFormedInput[i]:
+                breakdown(".", i)
+                izzySplitToBeDone = True
+            elif "?" in interpret.izzyFormedInput[i]:
+                breakdown("?", i)
+                izzySplitToBeDone = True
+            elif "!" in interpret.izzyFormedInput[i]:
+                breakdown("!", i)
+                izzySplitToBeDone = True
+    # Remove unnecessary spaces at the start and end between.
+    for i in range(len(interpret.izzyFormedInput)):
+        izzyStartEndSpaces = True
+        while izzyStartEndSpaces:
+            if interpret.izzyFormedInput[i] is not "":
+                if interpret.izzyFormedInput[i][0] == " ":
+                    interpret.izzyFormedInput[i] = interpret.izzyFormedInput[i][1:]
+                elif interpret.izzyFormedInput[i][-1] == " ":
+                    interpret.izzyFormedInput[i] = interpret.izzyFormedInput[i][:-1]
+                else:
+                    izzyStartEndSpaces = False
+            else:
+                izzyStartEndSpaces = False
+    # Clean the formed input before checking.
+    for i in range(len(interpret.izzyFormedInput)):
+        try:
+            if interpret.izzyFormedInput[i] == "":
+                interpret.izzyFormedInput.pop(i)
+        except:
+            continue
+    print(interpret.izzyFormedInput)
     # Start a loop for each possible input, check if it is equivalent.
     izzyResults = []
     for i in interpret.izzyFormedInput:
         izzyFound = False
         for izzyCycle in izzyInputs:
+            interpret.izzyPostInput = i
             if izzyCycle[0].casefold() == i:
                 # If it is equivalent, give the output, and break.
                 izzyFound = True
